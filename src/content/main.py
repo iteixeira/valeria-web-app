@@ -6,4 +6,4 @@ def main_page():
   with col2:
     st.image("./assets/valeria.png")
 
-  st.markdown("<h1 style='text-align: center; color: black;'; font-family:>Virtual Assistant for LEarning pRocesses In Arbovirus</h1>", unsafe_allow_html=True)
+  st.markdown("<h1 style='text-align: center; font-family:>Virtual Assistant for LEarning pRocesses In Arbovirus</h1>", unsafe_allow_html=True)

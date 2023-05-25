@@ -122,8 +122,6 @@ class Patient:
             columns=["key", "Valor"],
             index=self.labels.values()
         )
-        
-        st.dataframe(exp_df)
 
         # A coluna de resultado contém as informações do paciente, a saída do as_map() do explainer está na mesma ordem da entrada dos atributos, e consequentemente o método getRecord() da classe também esta na mesma ordem, não sendo necessário ordenar antes de unificar.
         exp_df["Resposta do Paciente"] = np.array(self.getRecord()[0])
