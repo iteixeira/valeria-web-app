@@ -7,6 +7,8 @@ import lime.lime_tabular
 import streamlit as st
 import requests
 
+import plotly.graph_objects as go
+
 class Patient:
     """Classe de Paciente, responsável por armazenar os dados do paciente e realizar o dianóstico do mesmo, com a utilização de um model de ML.
     """
@@ -37,7 +39,7 @@ class Patient:
         self.labels = dict(self.categorical_labels, **self.numerical_labels)
 
         # caminho onde está localizado o modelo de ML.
-        self.path_model_ml = "ml/gradient_model.pkl"
+        self.path_model_ml = "./ml/gradient_model.pkl"
 
     def diagnosis (self):
         """Realiza o dianóstico do paciente, utilizando os dados dos atributos para realizar a classificação pelo modelo de ML. Basicamente, a função carrega o modelo e faz o model.predict() com os dados do paciente. Também é executado o model.predict_proba() para obter as probabilidades de cada saída do modelo.
@@ -120,6 +122,8 @@ class Patient:
             columns=["key", "Valor"],
             index=self.labels.values()
         )
+        
+        st.dataframe(exp_df)
 
         # A coluna de resultado contém as informações do paciente, a saída do as_map() do explainer está na mesma ordem da entrada dos atributos, e consequentemente o método getRecord() da classe também esta na mesma ordem, não sendo necessário ordenar antes de unificar.
         exp_df["Resposta do Paciente"] = np.array(self.getRecord()[0])
@@ -139,8 +143,26 @@ class Patient:
         # Pegar apenas o resutlado do paciente
         exp_pos = exp_pos[["Resposta do Paciente"]]
         exp_neg = exp_neg[["Resposta do Paciente"]]
+        
+        categories = exp_df.index.to_list()
+        categories = [*categories, categories[0]]
 
-        return exp_pos, exp_neg
+        values_to_plot = (exp_df["Valor"] * 10).to_list()
+        values_to_plot = [*values_to_plot, values_to_plot[0]]
+
+        fig = go.Figure(
+            data=[
+                go.Scatterpolar(r=values_to_plot, theta=categories, name='Relevância', line={'dash': 'solid'})
+            ],
+            layout=go.Layout(
+                polar={'radialaxis': {'visible': True}},
+                showlegend=True,
+                width=700,
+                height=500
+            )
+        )
+
+        return exp_pos, exp_neg, fig
 
     def saveData(self):
         """
